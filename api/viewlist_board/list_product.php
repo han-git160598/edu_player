@@ -1,7 +1,5 @@
 <?php
 
-
-
 $sql = "SELECT 
             `tbl_product_product`.`id` as `id_product`,
             `tbl_product_product`.`product_name` as `product_name`,
@@ -13,9 +11,10 @@ $sql = "SELECT
             `tbl_product_category`.`category_en_title` as `category_en_title`,
             `tbl_product_category`.`category_parent` as `category_parent`
             FROM `tbl_product_product`
-           LEFT JOIN `tbl_product_category` ON `tbl_product_category`.`id` = `tbl_product_product`.`id_category`
+            LEFT JOIN `tbl_product_category` ON `tbl_product_category`.`id` = `tbl_product_product`.`id_category`
             WHERE 1=1
             ";
+            
 
 if(isset($_REQUEST['id_category']) && !(empty($_REQUEST['id_category']))){
     $id_category = $_REQUEST['id_category'];
@@ -23,8 +22,9 @@ if(isset($_REQUEST['id_category']) && !(empty($_REQUEST['id_category']))){
 }
 if(isset($_REQUEST['id_product']) && !(empty($_REQUEST['id_product']))){
     $id_product = $_REQUEST['id_product'];
-    $sql .="AND (`tbl_product_product`.`id_product` = '{$id_product}') ";
+    $sql .="AND (`tbl_product_product`.`id` = '{$id_product}') ";
 }
+
 if (isset($_REQUEST['filter'])) {
     if ($_REQUEST['filter'] == '') {
         unset($_REQUEST['filter']);

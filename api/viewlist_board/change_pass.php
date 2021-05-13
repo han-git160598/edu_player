@@ -26,7 +26,6 @@ if (!isset($_REQUEST['id_account'])) {
 $id_account = $_REQUEST['id_account'];
 
 
-
 switch ($type_account) {
     case 'customer':
         $sql = "SELECT * FROM `tbl_customer_customer` WHERE `id` = '{$id_account}' ";

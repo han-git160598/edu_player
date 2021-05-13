@@ -17,7 +17,6 @@ switch ($typeManager) {
         break;
     
     case 'create_category':
-
         
         $title = '';
         if (isset($_REQUEST['category_vn_title']) && ! empty($_REQUEST['category_vn_title'])) {
@@ -26,13 +25,26 @@ switch ($typeManager) {
             returnError("Nhập tên danh mục (tiếng việt)!");
         }
         
+        
         $content = '';
-        if (isset($_REQUEST['category_en_title']) && ! empty($_REQUEST['category_en_title'])) {
+        if (isset($_REQUEST['category_en_title']) && ! empty($_REQUEST['category_en_title'])) { 
             $title_en = $_REQUEST['category_en_title'];
+            if(is_username($title_en))
+            {
+                $title_en = $_REQUEST['category_en_title'];
+            }else{
+                returnError("Nhập tên danh mục không đúng định dạng (không được nhập dấu và khoảng trắng)!");
+            }
         } else {
             returnError("Nhập tên danh mục (tiếng anh)!");
         }
 
+        if (isset($_REQUEST['category_parent']) &&  $_REQUEST['category_parent'] !='') {
+            $category_parent = $_REQUEST['category_parent'];
+            
+        } else {
+            returnError("Nhập category_parent");
+        }
         
         $img_photo_category= '';
         if (isset($_FILES['image_category'])) {
@@ -48,13 +60,27 @@ switch ($typeManager) {
             returnError("Nhập image_category");
         }
 
-        if (isset($_REQUEST['category_parent']) &&  $_REQUEST['category_parent'] !='') {
-            $category_parent = $_REQUEST['category_parent'];
-            
-        } else {
-            returnError("Nhập category_parent");
-        }
-        
+       
+///////////////////////
+    $sql_title_category = "SELECT * FROM tbl_product_category 
+    WHERE category_en_title = '" . $title_en . "'  ";
+      $result_title = mysqli_query($conn, $sql_title_category);
+      $nums_titel = mysqli_num_rows($result_title);
+      if ($nums_titel > 0) {
+        returnError("Tên category_en_title đã tồn tại");
+      }
+     // lây floder topic
+    $sql_category_parent = "SELECT * FROM tbl_product_category 
+    WHERE id = '" . $category_parent . "'  ";
+
+    $result_check = mysqli_query($conn, $sql_category_parent);
+    $num_result_check = mysqli_num_rows($result_check);
+    $rowItem = $result_check->fetch_assoc();
+    $floder_category = $rowItem['category_en_title'];
+
+////////////////////////
+
+
 
         $sql_create_category = "
             INSERT INTO tbl_product_category SET
@@ -64,24 +90,47 @@ switch ($typeManager) {
             category_img     = '" . $img_photo_category . "'
         ";
 
-        if ($conn->query($sql_create_category)) {
+        
+        if($category_parent == 0)
+        {
+            if ($conn->query($sql_create_category)) {
 
-            $path = "../music_file/product_category/" . $title_en . "";
-            if (!file_exists($path)) {
-                mkdir($path, 0777, true);
-                returnSuccess("Tạo thư mục thành công");
-            }else{
-                returnError("lỗi rồi nè");
+                $path = "../music_file/" . $title_en . "";
+                if (!file_exists($path)) {
+                    mkdir($path, 0777, true);
+                    returnSuccess("Tạo thư mục thành công");
+                }else{
+                    returnError("Tên thư mục đã tồn tại");
+                }
+                
+                returnSuccess("Tạo danh mục thành công!");
+            } else {
+                returnError("Tạo danh mục không thành công!");
+            }
+        }else{
+            if ($conn->query($sql_create_category)) {
+                $path = "../music_file/" . $floder_category . "/" . $title_en . "";
+               
+                if (!file_exists($path)) {
+                    mkdir($path, 0777, true);
+                    returnSuccess("Tạo thư mục thành công");
+                }else{
+                    returnError("Tên thư mục đã tồn tại");
+                }
+                
+                returnSuccess("Tạo danh mục thành công!");
+            } else {
+                returnError("Tạo danh mục không thành công!");
+            }
+
         }
-            
-            returnSuccess("Tạo danh mục thành công!");
-        } else {
-            returnError("Tạo danh mục không thành công!");
-        }
+
+        
         
         break;
     
     case 'update_category':
+        
         
         $id_category = '';
         if (isset($_REQUEST['id_category']) && ! empty($_REQUEST['id_category'])) {
@@ -104,13 +153,103 @@ switch ($typeManager) {
                 returnError("Cập nhật danh mục (tiếng việt) không thành công!");
             }
         }
+
+
+
         if (isset($_REQUEST['category_en_title']) && ! empty($_REQUEST['category_en_title'])) {
+            // định dạng tên english, cũng là tên floder
+            $title_en = $_REQUEST['category_en_title'];
+            if(is_username($title_en))
+            {
+                $title_en = $_REQUEST['category_en_title'];
+            }else{
+                returnError("Nhập tên danh mục không đúng định dạng (không được nhập dấu và khoảng trắng)!");
+            }
+            // check tên en
+            $title_en = $_REQUEST['category_en_title'];
+            $sql_title_category = "SELECT * FROM tbl_product_category 
+            WHERE category_en_title = '" . $title_en . "'  ";
+            $result_title = mysqli_query($conn, $sql_title_category);
+            $nums_titel = mysqli_num_rows($result_title);
+            if ($nums_titel > 0) {
+                returnError("Tên category_en_title đã tồn tại");
+            }
+
+            // lấy tên floder cũ và mới xác định topic hay sub_category
+
+            $sql_floder_topic = "SELECT * FROM tbl_product_category 
+            WHERE id = '" . $id_category . "'  ";
+        
+            $result_check_floder = mysqli_query($conn, $sql_floder_topic);
+            $rowItem_floder = $result_check_floder->fetch_assoc();
+            $floder_category_old = $rowItem_floder['category_en_title'];
+            $category_parent_floder = $rowItem_floder['category_parent'];
+    
+
+
+
             $check ++;
             $query = "UPDATE tbl_product_category SET ";
             $query .= " category_en_title  = '" . $_REQUEST['category_en_title'] . "' ";
             $query .= " WHERE id = '" . $id_category . "'";
-            // Create post
+            
             if ($conn->query($query)) {
+                if($category_parent_floder == 0)
+                {
+                    // floder 
+                    $old_name = "../music_file/" . $floder_category_old . "";
+                    $new_name = "../music_file/" . $title_en . "";
+                    if(file_exists($new_name))
+                    { 
+                        echo "Error While Renaming $old_name" ;
+                    }
+                    else
+                    {
+                    if(rename( $old_name, $new_name))
+                        { 
+                            echo "Successfully Renamed $old_name to $new_name" ;
+                        }
+                        else
+                        {
+                            returnError("Cập nhật tên title_en thành công nhưng thất bại ở thay đổi tên thư mục  ") ;
+                        }
+                    }
+                // floder 
+                }else{
+
+                    $sql_floder_topic_1 = "SELECT * FROM tbl_product_category 
+                    WHERE id = '" . $category_parent_floder . "'  ";
+                
+                    $result_check_floder_topic = mysqli_query($conn, $sql_floder_topic_1);
+                    $rowItem_floder_topic = $result_check_floder_topic->fetch_assoc();
+                    $floder_topic_old_1 = $rowItem_floder_topic['category_en_title'];
+                   // $category_parent_floder_1 = $rowItem_floder_1['category_parent'];
+
+                    // floder 
+                    $old_name = "../music_file/" . $floder_topic_old_1 . "/" . $floder_category_old . "";
+                    $new_name =  "../music_file/" . $floder_topic_old_1 . "/" . $title_en . "";
+                    if(file_exists($new_name))
+                    { 
+                        echo "Error While Renaming $old_name" ;
+                    }
+                    else
+                    {
+                    if(rename( $old_name, $new_name))
+                        { 
+                            echo "Successfully Renamed $old_name to $new_name" ;
+                        }
+                        else
+                        {
+                            returnError("Cập nhật tên title_en thành công nhưng thất bại ở thay đổi tên thư mục  ") ;
+                        }
+                    }
+                // floder 
+
+
+                }
+
+               
+
                 $check --;
             } else {
                 returnError("Cập nhật danh mục (tiếng anh) không thành công!");
@@ -154,6 +293,7 @@ switch ($typeManager) {
         break;
     
     case 'delete_category':
+       
         
         $id_category = '';
         if (isset($_REQUEST['id_category']) && ! empty($_REQUEST['id_category'])) {
@@ -162,6 +302,7 @@ switch ($typeManager) {
             returnError("Nhập id_category!");
         }
 
+        // luận lý ràng buộc
         $sql_check_product = "SELECT id FROM tbl_product_product 
                                 WHERE id_category = '" . $id_category . "'";
         $result_product = db_qr($sql_check_product);
@@ -180,9 +321,7 @@ switch ($typeManager) {
 
          
 
-        $sql_check_category_exists = "SELECT category_img FROM tbl_product_category WHERE id = '" . $id_category . "'";
-
-       
+        $sql_check_category_exists = "SELECT * FROM tbl_product_category WHERE id = '" . $id_category . "'";
 
         $result_check = mysqli_query($conn, $sql_check_category_exists);
         $num_result_check = mysqli_num_rows($result_check);
@@ -191,19 +330,52 @@ switch ($typeManager) {
             
             while ($rowItem = $result_check->fetch_assoc()) {
                 $image_category = $rowItem['category_img'];
+                $category_parent = $rowItem['category_parent'];
+                $category_en_title = $rowItem['category_en_title'];
+                
                 
                 if (file_exists('../' . $image_category)) {
                     @unlink('../' . $image_category);
                 }
             }
-
-
-            
             $sql_delete_category = "
                             DELETE FROM tbl_product_category
                             WHERE  id = '" . $id_category . "'
                           ";
             if ($conn->query($sql_delete_category)) {
+
+                if($category_parent== 0)
+                {
+                    $dirname = "../music_file/" . $category_en_title . " ";
+                    if(rmdir($dirname))
+                    {
+                    echo ("$dirname successfully removed");
+                    }
+                    else
+                    {
+                        returnError("$dirname xóa thất bại, nhưng xóa DB thành công"); 
+                    }
+                }else{
+                    $sql_topic = "SELECT * FROM tbl_product_category 
+                                  WHERE id = " . $category_parent . ";
+                    ";
+                    $result_topic = mysqli_query($conn, $sql_topic);
+                    $rowItem_floder_topic = $result_topic->fetch_assoc();
+                    $floder_topic = $rowItem_floder_topic['category_en_title'];
+                   
+                    $dirname = "../music_file/" . $floder_topic . "/" . $category_en_title . "";
+                    if(rmdir($dirname))
+                    {
+                    echo ("$dirname successfully removed");
+                    }
+                    else
+                    {
+                        returnError("$dirname xóa thất bại, nhưng xóa DB thành công"); 
+                    }
+                }
+
+                    
+              
                 returnSuccess("Xóa danh mục thành công!");
             } else {
                 returnError("Xóa danh mục không thành công!");
