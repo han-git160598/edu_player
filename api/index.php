@@ -71,6 +71,10 @@ switch ($detect) {
    
 
         /*customer board*/
+    case 'favourite_music':{
+        include_once 'customer_board/favourite_music.php';
+        break; 
+    }
     
     case 'check_customer_disable': {
             include_once 'customer_board/check_customer_disable.php';
@@ -96,6 +100,10 @@ switch ($detect) {
         }
      
         /*viewlist board*/
+    case 'list_topic':{
+        include_once 'viewlist_board/list_topic.php';
+            break;
+    }
     case 'list_product':{
         include_once 'viewlist_board/list_product.php';
             break;

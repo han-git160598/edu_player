@@ -12,7 +12,7 @@ if (! isset($_REQUEST['type_manager'])) {
 $typeManager = $_REQUEST['type_manager'];
 
 switch ($typeManager) {
-    case 'list_category':
+    case 'list_product':
         include_once './viewlist_board/list_product.php';
         break;
     
@@ -30,11 +30,12 @@ switch ($typeManager) {
         } else {
             returnError("Nhập id_category ");
         }
-        
+
+
         $dir_save_product_music_file2='';
         if (isset($_FILES['product_music_file']) && ! empty($_FILES['product_music_file'])) { // up product_img
             $product_music_file = 'product_music_file';
-            $dir_save_product_music_file = "music_file/product_category/"; // sửa đường dẫn
+            $dir_save_product_music_file = "music_file/product_category/". $product_music_file ." "; // sửa đường dẫn
             $dir_save_product_music_file2 = handing_file_img($product_music_file, $dir_save_product_music_file);
         } else {
             returnError("Nhập product_music_file ");

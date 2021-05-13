@@ -69,8 +69,12 @@ switch ($type_manager) {
                 returnError("Nhập id_customer");
             }
 
-            $success = array();
+            $success = array(); 
+            
 
+            $sql_favourite = "DELETE FROM `tbl_product_favourite` WHERE `id_customer` = '{$id_customer}'";
+            db_qr($sql_favourite);
+            
             $sql = "DELETE FROM `tbl_customer_customer` WHERE `id` = '{$id_customer}'";
             if (db_qr($sql)) {
                 $success['delete_customer'] = "true";

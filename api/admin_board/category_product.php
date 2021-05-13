@@ -17,6 +17,7 @@ switch ($typeManager) {
         break;
     
     case 'create_category':
+
         
         $title = '';
         if (isset($_REQUEST['category_vn_title']) && ! empty($_REQUEST['category_vn_title'])) {
@@ -24,15 +25,16 @@ switch ($typeManager) {
         } else {
             returnError("Nhập tên danh mục (tiếng việt)!");
         }
+        
         $content = '';
         if (isset($_REQUEST['category_en_title']) && ! empty($_REQUEST['category_en_title'])) {
             $title_en = $_REQUEST['category_en_title'];
         } else {
             returnError("Nhập tên danh mục (tiếng anh)!");
         }
+
         
         $img_photo_category= '';
-        
         if (isset($_FILES['image_category'])) {
             $img_photo_category = saveImage($_FILES['image_category'], 'images/product_category/');
             if ($img_photo_category == "error_size_img") {
@@ -42,28 +44,35 @@ switch ($typeManager) {
             if ($img_photo_category == "error_type_img") {
                 returnError("image_category error type");
             }
+        }else{
+            returnError("Nhập image_category");
         }
 
-        if (isset($_REQUEST['category_parent']) && ! empty($_REQUEST['category_parent'])) {
+        if (isset($_REQUEST['category_parent']) &&  $_REQUEST['category_parent'] !='') {
             $category_parent = $_REQUEST['category_parent'];
-            $sql_create_category = "
+            
+        } else {
+            returnError("Nhập category_parent");
+        }
+        
+
+        $sql_create_category = "
             INSERT INTO tbl_product_category SET
             category_vn_title            = '" . $title_vn . "',
             category_en_title            = '" . $title_en . "',
             category_parent            = '" . $category_parent . "',
             category_img     = '" . $img_photo_category . "'
         ";
-        } else {
-            $sql_create_category = "
-            INSERT INTO tbl_product_category SET
-            category_vn_title            = '" . $title_vn . "',
-            category_en_title            = '" . $title_en . "',
-            category_img     = '" . $img_photo_category . "'
-        ";
-        }
-        
 
         if ($conn->query($sql_create_category)) {
+
+            $path = "../music_file/product_category/" . $title_en . "";
+            if (!file_exists($path)) {
+                mkdir($path, 0777, true);
+                returnSuccess("Tạo thư mục thành công");
+            }else{
+                returnError("lỗi rồi nè");
+        }
             
             returnSuccess("Tạo danh mục thành công!");
         } else {
@@ -152,10 +161,30 @@ switch ($typeManager) {
         } else {
             returnError("Nhập id_category!");
         }
-        
-        $sql_check_notification_exists = "SELECT * FROM tbl_product_category WHERE id = '" . $id_category . "'";
-        
-        $result_check = mysqli_query($conn, $sql_check_notification_exists);
+
+        $sql_check_product = "SELECT id FROM tbl_product_product 
+                                WHERE id_category = '" . $id_category . "'";
+        $result_product = db_qr($sql_check_product);
+        if(db_nums($result_product)>0)
+        {
+            returnError("Vui lòng xóa sản phẩm hết mới xóa danh mục!");
+        }
+
+        $sql_check_category = "SELECT id FROM tbl_product_category 
+                                WHERE category_parent = '" . $id_category . "'";
+        $result_category = db_qr($sql_check_category);
+        if(db_nums($result_category)>0)
+        {
+            returnError("Vui lòng xóa hết danh mục con rồi xóa danh mục cha!");
+        }
+
+         
+
+        $sql_check_category_exists = "SELECT category_img FROM tbl_product_category WHERE id = '" . $id_category . "'";
+
+       
+
+        $result_check = mysqli_query($conn, $sql_check_category_exists);
         $num_result_check = mysqli_num_rows($result_check);
         
         if ($num_result_check > 0) {
@@ -167,6 +196,8 @@ switch ($typeManager) {
                     @unlink('../' . $image_category);
                 }
             }
+
+
             
             $sql_delete_category = "
                             DELETE FROM tbl_product_category

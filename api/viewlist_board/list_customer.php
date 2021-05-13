@@ -7,6 +7,12 @@ $customer_disable = 'Y';
 if (isset($_REQUEST['customer_disable']) && !empty($_REQUEST['customer_disable'])) {
     $customer_disable = htmlspecialchars($_REQUEST['customer_disable']);
 }
+if (isset($_REQUEST['id_customer']) && !empty($_REQUEST['id_customer'])) {
+    $id_customer = htmlspecialchars($_REQUEST['id_customer']);
+
+    $sql .= " AND `id` = '$id_customer'";
+}
+
 $sql .= " AND `customer_status` = '$customer_disable'";
 
 if (isset($_REQUEST['filter'])) {
@@ -80,6 +86,7 @@ if ($nums > 0) {
             'customer_name' => htmlspecialchars_decode($row['customer_fullname']),
             'customer_phone' => htmlspecialchars_decode($row['customer_phone']),
             'customer_disable' => htmlspecialchars_decode($row['customer_status']),
+            'customer_avatar' => htmlspecialchars_decode($row['customer_avatar']),
         );
 
         array_push($customer_arr['data'], $customer_item);

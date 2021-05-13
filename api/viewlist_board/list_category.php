@@ -8,6 +8,14 @@ if (isset($_REQUEST['filter'])) {
         $filter = $_REQUEST['filter'];
     }
 }
+      
+    
+
+$id_category='';
+if (isset($_REQUEST['id_category']) && $_REQUEST['id_category'] != '') {
+    $id_category = $_REQUEST['id_category'];
+}
+
 
 // get total slide
 $sql = "SELECT count(tbl_product_category.id) as category_total  FROM tbl_product_category
@@ -15,11 +23,6 @@ $sql = "SELECT count(tbl_product_category.id) as category_total  FROM tbl_produc
         ";
 // echo $sql;
 // exit();
-if (! empty($filter)) {
-    $sql .= " AND tbl_product_category.category_en_title LIKE '%" . $filter . "%'
-        ";
-}
-
 $result = mysqli_query($conn, $sql);
 
 while ($row = $result->fetch_assoc()) {
@@ -41,13 +44,26 @@ $notification_arr['limit'] = strval($limit);
 $start = ($page - 1) * $limit;
 
 // query
-$sql = "SELECT * FROM tbl_product_category 
-        WHERE tbl_product_category.category_parent = '0' ";
 
-// if (! empty($filter)) {
-//     $sql .= " AND tbl_product_category.category_vn_title LIKE '%" . $filter . "%'
-//         ";
-// }
+
+$sql = "SELECT * FROM tbl_product_category 
+        WHERE 1=1";
+
+if (isset($_REQUEST['filter']) && $_REQUEST['filter'] != '') {
+    $filter = $_REQUEST['filter'];
+    $sql .= "
+    AND NOT category_parent = '0'
+    AND (category_vn_title LIKE '%" . $filter . "%' OR category_en_title LIKE '%" . $filter . "%' )";
+}else{
+    if (! empty($id_category)) {
+        $notification_arr['total']='1';
+        $sql .= " AND id = '".$id_category."'";
+    }else{
+       $sql.=" AND tbl_product_category.category_parent = '0' ";
+    }
+}
+
+
 
 // if (!empty($home_action) ) {
 //     $sql .= " AND tbl_product_category.category_en_title = '".$filter."'";
