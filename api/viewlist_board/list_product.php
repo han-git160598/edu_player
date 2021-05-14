@@ -4,6 +4,7 @@ $sql = "SELECT
             `tbl_product_product`.`id` as `id_product`,
             `tbl_product_product`.`product_name` as `product_name`,
             `tbl_product_product`.`product_img` as `product_img`,
+            `tbl_product_product`.`product_duration` as `product_duration`,
             `tbl_product_product`.`product_music_file` as `product_music_file`,
 
             `tbl_product_category`.`id` as `id_category`,
@@ -64,6 +65,7 @@ if ($nums > 0) {
             'id_product' => $row['id_product'],
             'product_name' => htmlspecialchars_decode($row['product_name']),
             'product_img' => htmlspecialchars_decode($row['product_img']),
+            'product_duration' => htmlspecialchars_decode($row['product_duration']),
             'product_music_file' => htmlspecialchars_decode($row['product_music_file']),
             'category_en_title' => htmlspecialchars_decode($row['category_en_title']),
             'id_category' => htmlspecialchars_decode($row['id_category']),

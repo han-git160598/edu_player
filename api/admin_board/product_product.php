@@ -30,6 +30,12 @@ switch ($typeManager) {
         } else {
             returnError("Nhập id_category ");
         }
+        $product_duration='';
+        if (isset($_REQUEST['product_duration']) && ! empty($_REQUEST['product_duration'])) {
+            $product_duration  = $_REQUEST['product_duration'];
+        } else {
+            returnError("Nhập product_duration ");
+        }
 
         $sql_category = "SELECT category_en_title, category_parent FROM tbl_product_category
                          WHERE id = '$id_category'
@@ -60,17 +66,12 @@ switch ($typeManager) {
         }
 
 
-//        echo $category_en_title ."-". $category_parent ."-". $category_en_title_topic;exit();
-
         $dir_save_product_music_file2='';
         if (isset($_FILES['product_music_file']) && ! empty($_FILES['product_music_file'])) { // up product_img
+            
             $product_music_file = 'product_music_file';
-
             $dir_save_product_music_foler = "music_file/" . $category_en_title_topic . "/" . $category_en_title ."/";
-
             $dir_save_product_music_file2 = handing_file_img($product_music_file, $dir_save_product_music_foler);
-
-            // echo $dir_save_product_music_file2;exit();
         
         } else {
             returnError("Nhập product_music_file ");
@@ -88,27 +89,14 @@ switch ($typeManager) {
         
         
         $sql_create_product = "
-              INSERT INTO tbl_product_product SET
-              product_name = '" . $product_name . "'
-              , id_category = '" . $id_category . "'
-        ";
-
-        // $sql_create_product = "
-        //     INSERT INTO tbl_product_product SET
-        //     product_name            = '" . $product_name . "',
-        //     id_category     = '" . $id_category . "'
-        // ";
-
-        if (isset($dir_save_product_img2) && !empty($dir_save_product_img2)) {
-            $sql_create_product .= " ,`product_img` = '{$dir_save_product_img2}'";
-        }
-
-        if (isset($dir_save_product_music_file2) && !empty($dir_save_product_music_file2)) {
-            $sql_create_product .= " ,`product_music_file` = '{$dir_save_product_music_file2}'";
-        }
+                                INSERT INTO tbl_product_product SET
+                                  product_name = '$product_name'
+                                , id_category = '$id_category'
+                                , product_duration = '$product_duration'
+                                , product_img = '$dir_save_product_img2'
+                                , product_music_file = '$dir_save_product_music_file2'";
 
         if ($conn->query($sql_create_product)) {
-            
             returnSuccess("Tạo sản phẩm thành công!");
         } else {
             returnError("Tạo sản phẩm không thành công!");

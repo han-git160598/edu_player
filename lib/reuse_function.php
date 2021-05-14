@@ -26,6 +26,7 @@ function getCategorySon($idCategory = '')
                 'category_vn_title' => $row['category_vn_title'],
                 'category_en_title' => $row['category_en_title'],
                 'category_img' => $row['category_img'],
+                'category_hot' => $row['category_hot'],
                 'category_parent' => $row['category_parent'],
             );
             // Push to "data"

@@ -146,6 +146,19 @@ switch ($typeManager) {
         
         $check = 0;
         
+        if (isset($_REQUEST['category_hot']) && ! empty($_REQUEST['category_hot'])) {
+            $check ++;
+            $query = "UPDATE tbl_product_category SET ";
+            $query .= " category_hot  = '" . $_REQUEST['category_hot'] . "' ";
+            $query .= " WHERE id = '" . $id_category . "'";
+            // Create post
+            if ($conn->query($query)) {
+                $check --;
+            } else {
+                returnError("Cập nhật danh mục nổi bật");
+            }
+        }
+
         if (isset($_REQUEST['category_vn_title']) && ! empty($_REQUEST['category_vn_title'])) {
             $check ++;
             $query = "UPDATE tbl_product_category SET ";
@@ -173,8 +186,9 @@ switch ($typeManager) {
 
             // check tên en
             $title_en = $_REQUEST['category_en_title'];
+
             $sql_title_category = "SELECT * FROM tbl_product_category 
-            WHERE category_en_title = '" . $title_en . "'  ";
+            WHERE id != '$id_category' AND category_en_title = '" . $title_en . "'  ";
             $result_title = mysqli_query($conn, $sql_title_category);
             $nums_titel = mysqli_num_rows($result_title);
             if ($nums_titel > 0) {
@@ -191,8 +205,6 @@ switch ($typeManager) {
             $floder_category_old = $rowItem_floder['category_en_title'];
             $category_parent_floder = $rowItem_floder['category_parent'];
     
-
-
 
             $check ++;
             $query = "UPDATE tbl_product_category SET ";
@@ -213,33 +225,47 @@ switch ($typeManager) {
                     {
                     if(rename( $old_name, $new_name))
                         { 
+                            //lấy id_category topic
 
-                            $sql_product = "SELECT * FROM tbl_product_product
-                                                   WHERE id_category = 'id_category';
+                            $sql_category ="SELECT * FROM tbl_product_category
+                                            WHERE category_parent = '$id_category' 
                             ";
+
+                            $result_category = mysqli_query($conn, $sql_category);
+                            $num_result_category = mysqli_num_rows($result_category);
                             
-                            $result_product = mysqli_query($conn, $sql_product);
-                            $num_result_product = mysqli_num_rows($result_product);
-                        
-                            if ($num_result_product > 0) {
-                                while ($rowItem_product = mysqli_fetch_assoc($result_product)) 
+                            if ($num_result_category > 0) {
+                                while ($rowItem_category = mysqli_fetch_assoc($result_category)) 
                                 {
-                                    $floder_category = $rowItem_product['category_en_title'];
+                                    $sql_product_by_category = "SELECT * FROM tbl_product_product
+                                                                WHERE id_category ='".$rowItem_category['id']."'";
 
+                                     $result_product_by_category = mysqli_query($conn, $sql_product_by_category);
+                                     $num_product_by_category = mysqli_num_rows($result_product_by_category);
+                                     if ($num_product_by_category > 0) {
+                                        while ($rowItem_product_by_category = mysqli_fetch_assoc($result_product_by_category)) 
+                                        {
+                                           $product_music_file =$rowItem_product_by_category['product_music_file'];
+                                           $id_product = $rowItem_product_by_category['id'];
+                                           $array = explode("/",$product_music_file);
+                                            $array[1] = $title_en;
+                                            $new_link =  implode("/",$array);
 
+                                            $sql_update_link = "UPDATE tbl_product_product SET ";
+                                            $sql_update_link .=" product_music_file  = '" . $new_link . "' ";
+                                            $sql_update_link .= " WHERE id = '" . $id_product . "'";
+                                           
+                                            if ($conn->query($sql_update_link)) {
+                                                $check--;
+                                            }else{
+                                                returnError("thay đổi danh mục không thành công");
+                                            }
+                                        }
 
-
-
+                                     }
                                 }
                             }
-
-
-
-
-
-
-
-                            returnSuccess("Cập nhật danh mục (tiếng anh) thành công!");
+ 
                         }
                         else
                         {
@@ -268,7 +294,48 @@ switch ($typeManager) {
                     {
                     if(rename( $old_name, $new_name))
                         { 
-                            returnSuccess("Cập nhật danh mục (tiếng anh) thành công!");
+
+                            //lấy id_category topic
+
+                            $sql_category = "SELECT * FROM tbl_product_category
+                                            WHERE id = '$id_category' 
+                            ";
+
+                            $result_category = mysqli_query($conn, $sql_category);
+                            $num_result_category = mysqli_num_rows($result_category);
+                            
+                            if ($num_result_category > 0) {
+                                while ($rowItem_category = mysqli_fetch_assoc($result_category)) 
+                                {
+                                    $sql_product_by_category = "SELECT * FROM tbl_product_product
+                                                                WHERE id_category ='".$rowItem_category['id']."'";
+
+                                     $result_product_by_category = mysqli_query($conn, $sql_product_by_category);
+                                     $num_product_by_category = mysqli_num_rows($result_product_by_category);
+                                     if ($num_product_by_category > 0) {
+                                        while ($rowItem_product_by_category = mysqli_fetch_assoc($result_product_by_category)) 
+                                        {
+                                           $product_music_file =$rowItem_product_by_category['product_music_file'];
+                                           $id_product = $rowItem_product_by_category['id'];
+                                           $array = explode("/",$product_music_file);
+                                            $array[2] = $title_en;
+                                            $new_link =  implode("/",$array);
+
+                                            $sql_update_link = "UPDATE tbl_product_product SET ";
+                                            $sql_update_link .=" product_music_file  = '" . $new_link . "' ";
+                                            $sql_update_link .= " WHERE id = '" . $id_product . "'";
+                                           
+                                            if ($conn->query($sql_update_link)) {
+                                                $check--;
+                                            }else{
+                                                returnError("thay đổi danh mục không thành công");
+                                            }
+                                        }
+
+                                     }
+                                }
+                            }
+
                         }
                         else
                         {
@@ -381,7 +448,7 @@ switch ($typeManager) {
                     $dirname = "../music_file/" . $category_en_title . " ";
                     if(rmdir($dirname))
                     {
-                    echo ("$dirname successfully removed");
+                        returnSuccess("Xóa danh mục thành công!");
                     }
                     else
                     {
@@ -398,7 +465,7 @@ switch ($typeManager) {
                     $dirname = "../music_file/" . $floder_topic . "/" . $category_en_title . "";
                     if(rmdir($dirname))
                     {
-                    echo ("$dirname successfully removed");
+                        returnSuccess("Xóa danh mục thành công!");
                     }
                     else
                     {
@@ -408,7 +475,7 @@ switch ($typeManager) {
 
                     
               
-                returnSuccess("Xóa danh mục thành công!");
+                
             } else {
                 returnError("Xóa danh mục không thành công!");
             }

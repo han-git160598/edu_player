@@ -1,5 +1,5 @@
 <?php
-$sql = "SELECT id,category_vn_title,category_en_title,category_img,category_parent
+$sql = "SELECT id,category_vn_title,category_en_title,category_img,category_parent,category_hot
         FROM tbl_product_category 
         WHERE category_parent != '0' ";
 
@@ -22,6 +22,7 @@ if($nums > 0){
             'category_vn_title' => $row['category_vn_title'],
             'category_en_title' => $row['category_en_title'],
             'category_img' => $row['category_img'],
+            'category_hot' => $row['category_hot'],
             'category_parent' => $row['category_parent']
         );
         array_push($result_arr['data'], $result_item);

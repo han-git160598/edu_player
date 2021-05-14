@@ -104,7 +104,10 @@ switch ($detect) {
         }
      
         /*viewlist board*/
-    
+    case 'list_category_hot':{
+        include_once 'viewlist_board/list_category_hot.php';
+            break;
+    }
     case 'list_favourite':{
             include_once 'viewlist_board/list_favourite.php';
             break;
