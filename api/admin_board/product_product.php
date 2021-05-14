@@ -37,47 +37,44 @@ switch ($typeManager) {
             returnError("Nhập product_duration ");
         }
 
-        $sql_category = "SELECT category_en_title, category_parent FROM tbl_product_category
-                         WHERE id = '$id_category'
-        ";
-
-        $result = db_qr($sql_category);
-        $nums = db_nums($result);
-        if($nums > 0)
-        {
-            while($row=db_assoc($result))
-            {
-                $category_en_title = $row['category_en_title'];
-                $category_parent = $row['category_parent'];
-            }
-        }
-
-        $sql_category_topic = "SELECT category_en_title FROM tbl_product_category
-                         WHERE id = '$category_parent'
-        ";
-        $result_topic = db_qr($sql_category_topic);
-        $nums_topic = db_nums($result_topic);
-        if($nums_topic > 0)
-        {
-            while($row_topic=db_assoc($result_topic))
-            {
-                $category_en_title_topic = $row_topic['category_en_title'];
-            }
-        }
-
-
+    
+// thêm âm nhạc
         $dir_save_product_music_file2='';
         if (isset($_FILES['product_music_file']) && ! empty($_FILES['product_music_file'])) { // up product_img
             
+            $sql_product = "SELECT id FROM tbl_product_product   
+            WHERE id = (SELECT MAX(id) FROM tbl_product_product)
+           ";
+            $result = mysqli_query($conn, $sql_product);
+            $nums = mysqli_num_rows($result);
+            if ($nums > 0) {
+                while ($row = mysqli_fetch_assoc($result)) {
+                    $id_product = $row['id'] + 1;
+                }
+            }
+
+
             $product_music_file = 'product_music_file';
-            $dir_save_product_music_foler = "music_file/" . $category_en_title_topic . "/" . $category_en_title ."/";
-            $dir_save_product_music_file2 = handing_file_img($product_music_file, $dir_save_product_music_foler);
-        
+            $dir_save_product_music_foler = "music_file/product_category/";
+            $dir_save_product_music_file2 = handing_file_mp3($product_music_file, $dir_save_product_music_foler,$id_product);
+
+           
+            
+
+            // $img_photo_category = saveImage($_FILES['product_music_file'], 'images/product_category/');
+            // if ($img_photo_category == "error_size_img") {
+            //     returnError("image_category > 5MB !");
+            // }
+            
+            // if ($img_photo_category == "error_type_img") {
+            //     returnError("image_category error type");
+            // }
+         
         } else {
             returnError("Nhập product_music_file ");
         }
 
-
+// thêm hình ảnh
         $dir_save_product_img2 = '';
         if (isset($_FILES['product_img']) && ! empty($_FILES['product_img'])) {
             $customer_product_img = 'product_img';
