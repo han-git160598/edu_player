@@ -71,6 +71,10 @@ switch ($detect) {
    
 
         /*customer board*/
+    case 'check_product_favourite':{
+        include_once 'customer_board/check_product_favourite.php';
+        break; 
+    }
     case 'favourite_music':{
         include_once 'customer_board/favourite_music.php';
         break; 
@@ -89,8 +93,8 @@ switch ($detect) {
         }
     
   
-    case 'check_isset_customer': {
-            include_once 'customer_board/check_isset_customer.php';
+    case 'check_phone_isset': {
+            include_once 'customer_board/check_phone_isset.php';
             break;
         }
     
@@ -100,6 +104,15 @@ switch ($detect) {
         }
      
         /*viewlist board*/
+    
+    case 'list_favourite':{
+            include_once 'viewlist_board/list_favourite.php';
+            break;
+    }
+    case 'list_category_by_topic':{
+        include_once 'viewlist_board/list_category_by_topic.php';
+            break;
+    }
     case 'list_topic':{
         include_once 'viewlist_board/list_topic.php';
             break;

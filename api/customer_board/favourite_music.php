@@ -102,6 +102,7 @@ switch ($typeManager) {
 
     case 'create_favourite':
 
+        
      
         if (isset($_REQUEST['id_product']) && $_REQUEST['id_product'] != '') {
             $id_product = $_REQUEST['id_product'];

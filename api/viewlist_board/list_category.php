@@ -10,7 +10,6 @@ if (isset($_REQUEST['filter'])) {
 }
       
     
-
 $id_category='';
 if (isset($_REQUEST['id_category']) && $_REQUEST['id_category'] != '') {
     $id_category = $_REQUEST['id_category'];
@@ -88,7 +87,7 @@ if ($num > 0) {
             'category_en_title' => $row['category_en_title'],
             'category_img' => $row['category_img'],  
             'category_parent' => $row['category_parent'],
-            'category_son' => getCategorySon($row['id'], $conn) 
+            'category_son' => (isset($id_category) && !empty($id_category))?getCategorySon($row['id'], $conn):"" 
         );
         
         // Push to "data"

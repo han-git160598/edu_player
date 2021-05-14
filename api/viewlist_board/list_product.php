@@ -5,16 +5,26 @@ $sql = "SELECT
             `tbl_product_product`.`product_name` as `product_name`,
             `tbl_product_product`.`product_img` as `product_img`,
             `tbl_product_product`.`product_music_file` as `product_music_file`,
-            `tbl_product_product`.`id_category` as `id_category`,
 
+            `tbl_product_category`.`id` as `id_category`,
             `tbl_product_category`.`category_vn_title` as `category_vn_title`,
             `tbl_product_category`.`category_en_title` as `category_en_title`,
-            `tbl_product_category`.`category_parent` as `category_parent`
+            `tbl_product_category`.`category_parent` as `category_parent`,
+
+            `tbl_product_favourite`.`id` as `id_favourite`,
+            `tbl_product_favourite`.`id_customer` as `id_customer`
+
             FROM `tbl_product_product`
+            LEFT JOIN `tbl_product_favourite` ON `tbl_product_favourite`.`id_product` = `tbl_product_product`.`id`
             LEFT JOIN `tbl_product_category` ON `tbl_product_category`.`id` = `tbl_product_product`.`id_category`
             WHERE 1=1
             ";
             
+
+if(isset($_REQUEST['id_customer']) && !(empty($_REQUEST['id_customer']))){
+    $id_customer = $_REQUEST['id_customer'];
+    $sql .="AND (`tbl_product_favourite`.`id_customer` = '{$id_customer}') ";
+}
 
 if(isset($_REQUEST['id_category']) && !(empty($_REQUEST['id_category']))){
     $id_category = $_REQUEST['id_category'];
@@ -36,33 +46,12 @@ if (isset($_REQUEST['filter'])) {
     }
 }
 
-
 $product_arr = array();
 
-// $total = count(db_fetch_array($sql));
-// $limit = 100;
-// $page = 1;
-
-// if (isset($_REQUEST['limit']) && !empty($_REQUEST['limit'])) { 
-//     $limit = $_REQUEST['limit'];
-// }
-// if (isset($_REQUEST['page']) && !empty($_REQUEST['page'])) {
-//     $page = $_REQUEST['page'];
-// }
-
-
-// $total_page = ceil($total / $limit);
-// $start = ($page - 1) * $limit;
-//$sql .= " ORDER BY `tbl_product_product`.`id` DESC LIMIT {$start},{$limit}";
 $sql .= " ORDER BY `tbl_product_product`.`id` DESC";
 
 
 $product_arr['success'] = 'true';
-
-// $product_arr['total'] = strval($total);
-// $product_arr['total_page'] = strval($total_page);
-// $product_arr['limit'] = strval($limit);
-// $product_arr['page'] = strval($page);
 $product_arr['data'] = array();
 $result = db_qr($sql);
 
@@ -76,6 +65,11 @@ if ($nums > 0) {
             'product_name' => htmlspecialchars_decode($row['product_name']),
             'product_img' => htmlspecialchars_decode($row['product_img']),
             'product_music_file' => htmlspecialchars_decode($row['product_music_file']),
+            'category_en_title' => htmlspecialchars_decode($row['category_en_title']),
+            'id_category' => htmlspecialchars_decode($row['id_category']),
+            'category_parent' => htmlspecialchars_decode($row['category_parent']),
+            'category_vn_title' => htmlspecialchars_decode($row['category_vn_title']),
+            'favourite_status' => (!empty($row['id_favourite']))?"Y":"N"
         );
 
         array_push($product_arr['data'], $product_item);

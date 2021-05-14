@@ -38,13 +38,10 @@ switch ($typeManager) {
         } else {
             returnError("Nhập tên danh mục (tiếng anh)!");
         }
-
+        $category_parent='0';
         if (isset($_REQUEST['category_parent']) &&  $_REQUEST['category_parent'] !='') {
             $category_parent = $_REQUEST['category_parent'];
-            
-        } else {
-            returnError("Nhập category_parent");
-        }
+        } 
         
         $img_photo_category= '';
         if (isset($_FILES['image_category'])) {
@@ -70,13 +67,23 @@ switch ($typeManager) {
         returnError("Tên category_en_title đã tồn tại");
       }
      // lây floder topic
-    $sql_category_parent = "SELECT * FROM tbl_product_category 
-    WHERE id = '" . $category_parent . "'  ";
+    if($category_parent !=0)
+    {
+        $sql_category_parent = "SELECT * FROM tbl_product_category 
+        WHERE id = '" . $category_parent . "'  ";
+    
+        $result_check = mysqli_query($conn, $sql_category_parent);
+        $num_result_check = mysqli_num_rows($result_check);
+    
+        if ($num_result_check > 0) {
+            while ($rowItem = mysqli_fetch_assoc($result_check)) {
+                $floder_category = $rowItem['category_en_title'];
+            }
+        }
+    }
+    
 
-    $result_check = mysqli_query($conn, $sql_category_parent);
-    $num_result_check = mysqli_num_rows($result_check);
-    $rowItem = $result_check->fetch_assoc();
-    $floder_category = $rowItem['category_en_title'];
+
 
 ////////////////////////
 
@@ -98,12 +105,10 @@ switch ($typeManager) {
                 $path = "../music_file/" . $title_en . "";
                 if (!file_exists($path)) {
                     mkdir($path, 0777, true);
-                    returnSuccess("Tạo thư mục thành công");
+                    returnSuccess("Tạo danh mục thành công!");
                 }else{
                     returnError("Tên thư mục đã tồn tại");
                 }
-                
-                returnSuccess("Tạo danh mục thành công!");
             } else {
                 returnError("Tạo danh mục không thành công!");
             }
@@ -155,7 +160,6 @@ switch ($typeManager) {
         }
 
 
-
         if (isset($_REQUEST['category_en_title']) && ! empty($_REQUEST['category_en_title'])) {
             // định dạng tên english, cũng là tên floder
             $title_en = $_REQUEST['category_en_title'];
@@ -165,6 +169,8 @@ switch ($typeManager) {
             }else{
                 returnError("Nhập tên danh mục không đúng định dạng (không được nhập dấu và khoảng trắng)!");
             }
+
+
             // check tên en
             $title_en = $_REQUEST['category_en_title'];
             $sql_title_category = "SELECT * FROM tbl_product_category 
@@ -201,13 +207,39 @@ switch ($typeManager) {
                     $new_name = "../music_file/" . $title_en . "";
                     if(file_exists($new_name))
                     { 
-                        echo "Error While Renaming $old_name" ;
+                       // echo "Error While Renaming $old_name" ;
                     }
                     else
                     {
                     if(rename( $old_name, $new_name))
                         { 
-                            echo "Successfully Renamed $old_name to $new_name" ;
+
+                            $sql_product = "SELECT * FROM tbl_product_product
+                                                   WHERE id_category = 'id_category';
+                            ";
+                            
+                            $result_product = mysqli_query($conn, $sql_product);
+                            $num_result_product = mysqli_num_rows($result_product);
+                        
+                            if ($num_result_product > 0) {
+                                while ($rowItem_product = mysqli_fetch_assoc($result_product)) 
+                                {
+                                    $floder_category = $rowItem_product['category_en_title'];
+
+
+
+
+
+                                }
+                            }
+
+
+
+
+
+
+
+                            returnSuccess("Cập nhật danh mục (tiếng anh) thành công!");
                         }
                         else
                         {
@@ -230,13 +262,13 @@ switch ($typeManager) {
                     $new_name =  "../music_file/" . $floder_topic_old_1 . "/" . $title_en . "";
                     if(file_exists($new_name))
                     { 
-                        echo "Error While Renaming $old_name" ;
+                     //   echo "Error While Renaming $old_name" ;
                     }
                     else
                     {
                     if(rename( $old_name, $new_name))
                         { 
-                            echo "Successfully Renamed $old_name to $new_name" ;
+                            returnSuccess("Cập nhật danh mục (tiếng anh) thành công!");
                         }
                         else
                         {

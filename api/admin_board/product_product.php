@@ -31,15 +31,52 @@ switch ($typeManager) {
             returnError("Nhập id_category ");
         }
 
+        $sql_category = "SELECT category_en_title, category_parent FROM tbl_product_category
+                         WHERE id = '$id_category'
+        ";
+
+        $result = db_qr($sql_category);
+        $nums = db_nums($result);
+        if($nums > 0)
+        {
+            while($row=db_assoc($result))
+            {
+                $category_en_title = $row['category_en_title'];
+                $category_parent = $row['category_parent'];
+            }
+        }
+
+        $sql_category_topic = "SELECT category_en_title FROM tbl_product_category
+                         WHERE id = '$category_parent'
+        ";
+        $result_topic = db_qr($sql_category_topic);
+        $nums_topic = db_nums($result_topic);
+        if($nums_topic > 0)
+        {
+            while($row_topic=db_assoc($result_topic))
+            {
+                $category_en_title_topic = $row_topic['category_en_title'];
+            }
+        }
+
+
+//        echo $category_en_title ."-". $category_parent ."-". $category_en_title_topic;exit();
 
         $dir_save_product_music_file2='';
         if (isset($_FILES['product_music_file']) && ! empty($_FILES['product_music_file'])) { // up product_img
             $product_music_file = 'product_music_file';
-            $dir_save_product_music_file = "music_file/product_category/". $product_music_file ." "; // sửa đường dẫn
-            $dir_save_product_music_file2 = handing_file_img($product_music_file, $dir_save_product_music_file);
+
+            $dir_save_product_music_foler = "music_file/" . $category_en_title_topic . "/" . $category_en_title ."/";
+
+            $dir_save_product_music_file2 = handing_file_img($product_music_file, $dir_save_product_music_foler);
+
+            // echo $dir_save_product_music_file2;exit();
+        
         } else {
             returnError("Nhập product_music_file ");
         }
+
+
         $dir_save_product_img2 = '';
         if (isset($_FILES['product_img']) && ! empty($_FILES['product_img'])) {
             $customer_product_img = 'product_img';
@@ -80,6 +117,21 @@ switch ($typeManager) {
         break;
     
     case 'update_product':
+
+        
+        $category_en_title='';
+        if (isset($_REQUEST['category_en_title']) && ! empty($_REQUEST['category_en_title'])) {
+            $category_en_title  = $_REQUEST['category_en_title'];
+        } else {
+            returnError("Nhập category_en_title");
+        }
+
+        $category_parent='';
+        if (isset($_REQUEST['category_parent']) && ! empty($_REQUEST['category_parent'])) {
+            $category_parent  = $_REQUEST['category_parent'];
+        } else {
+            returnError("Nhập category_parent");
+        }
         
         $id_product = '';
         if (isset($_REQUEST['id_product']) && ! empty($_REQUEST['id_product'])) {
@@ -131,6 +183,21 @@ switch ($typeManager) {
         }
 
 
+//// truy van duong dan luu file mp3
+
+        $sql_category_topic = "SELECT category_en_title FROM tbl_product_category
+                         WHERE id = '$category_parent'
+        ";
+        $result_topic = db_qr($sql_category_topic);
+        $nums_topic = db_nums($result_topic);
+        if($nums_topic > 0)
+        {
+            while($row_topic=db_assoc($result_topic))
+            {
+                $category_en_title_topic = $row_topic['category_en_title'];
+            }
+        }
+
         $product_music_file = '';
         if (isset($_FILES['product_music_file'])) {
             $check++;
@@ -145,9 +212,13 @@ switch ($typeManager) {
                     }
                 }
             }
+
             $product_music_file = 'product_music_file';
-            $dir_save_product_music_file = "music_file/product_category/";
-            $dir_save_product_music_file2 = handing_file_img($category_img, $dir_save_product_music_file2);
+
+            $dir_save_product_music_foler = "music_file/" . $category_en_title_topic . "/" . $category_en_title ."/";
+
+            $dir_save_product_music_file2 = handing_file_img($product_music_file, $dir_save_product_music_foler);
+
             $sql = "UPDATE `tbl_product_product`
                 SET `product_music_file` = '{$dir_save_product_music_file2}' 
                 WHERE `id` = '{$id_product}'";

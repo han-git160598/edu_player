@@ -96,7 +96,7 @@ if ($nums > 0) {
             
                 'customer_phone' => $row['customer_phone'],
                 'customer_name' => $row['customer_fullname'],
-                'customer_avatar_img' => $row['customer_avatar'],
+                'customer_avatar_img' => (isset($row['customer_avatar']) && !empty($row['customer_avatar']))?$row['customer_avatar']:"",
 
             );
 

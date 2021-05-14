@@ -114,8 +114,7 @@ switch ($type_manager) {
                 }
             }
 
-
-
+      
             if (isset($_FILES['customer_avatar_img'])) {
                 $sql = "SELECT * FROM `tbl_customer_customer` WHERE `id` = '{$id_customer}'";
                 $result = mysqli_query($conn, $sql);
@@ -138,18 +137,33 @@ switch ($type_manager) {
                     $success['customer_avatar_img'] = 'true';
                 }
             }
-            // print_r($success);
-            // exit();
-           
+
+
+            
+            $customer_arr =array();
             if (!empty($success)) {
-                // if (isset($success['customer_disable']) && !empty($success['customer_disable']) && $customer_disable == 'Y') {
-                //     $title = "Thông báo khóa tài khoản!!!";
-                //     $bodyMessage = "Tài khoản đã bị khóa";
-                //     $action = "customer_disable";
-                //     $type_send = 'topic';
-                //     $to = 'KSE_customer_disable_'.$id_customer;
-                //     pushNotification($title, $bodyMessage, $action, $to, $type_send);
-                // }
+                $customer_arr['success']="true";  
+                $customer_arr['data']=array();
+                $sql = "SELECT * FROM `tbl_customer_customer` WHERE `id` = '{$id_customer}'";
+                $result_update = mysqli_query($conn, $sql);
+                $nums_update = mysqli_num_rows($result_update);
+    
+                if ($nums_update > 0) {
+                    while ($row_update = db_assoc($result_update)) {
+                        $customer_update = array(
+                            'id _customer' => $row_update['id'],
+                            'customer_fullname' => htmlspecialchars_decode($row_update['customer_fullname']),
+                            'customer_phone' => htmlspecialchars_decode($row_update['customer_phone']),
+                            'customer_avatar' => htmlspecialchars_decode($row_update['customer_avatar'])
+                        );
+                
+                        array_push($customer_arr['data'], $customer_update);
+                    }
+                    reJson($customer_arr);
+                } else {
+                    returnError("Không có dữ liệu");
+                }
+            
                 returnSuccess("Cập nhật thành công");
             } else {
                 returnError("Không có thông tin cập nhật");
