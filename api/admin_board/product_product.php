@@ -104,19 +104,19 @@ switch ($typeManager) {
     case 'update_product':
 
         
-        $category_en_title='';
-        if (isset($_REQUEST['category_en_title']) && ! empty($_REQUEST['category_en_title'])) {
-            $category_en_title  = $_REQUEST['category_en_title'];
-        } else {
-            returnError("Nhập category_en_title");
-        }
+        // $category_en_title='';
+        // if (isset($_REQUEST['category_en_title']) && ! empty($_REQUEST['category_en_title'])) {
+        //     $category_en_title  = $_REQUEST['category_en_title'];
+        // } else {
+        //     returnError("Nhập category_en_title");
+        // }
 
-        $category_parent='';
-        if (isset($_REQUEST['category_parent']) && ! empty($_REQUEST['category_parent'])) {
-            $category_parent  = $_REQUEST['category_parent'];
-        } else {
-            returnError("Nhập category_parent");
-        }
+        // $category_parent='';
+        // if (isset($_REQUEST['category_parent']) && ! empty($_REQUEST['category_parent'])) {
+        //     $category_parent  = $_REQUEST['category_parent'];
+        // } else {
+        //     returnError("Nhập category_parent");
+        // }
         
         $id_product = '';
         if (isset($_REQUEST['id_product']) && ! empty($_REQUEST['id_product'])) {
@@ -168,20 +168,6 @@ switch ($typeManager) {
         }
 
 
-//// truy van duong dan luu file mp3
-
-        $sql_category_topic = "SELECT category_en_title FROM tbl_product_category
-                         WHERE id = '$category_parent'
-        ";
-        $result_topic = db_qr($sql_category_topic);
-        $nums_topic = db_nums($result_topic);
-        if($nums_topic > 0)
-        {
-            while($row_topic=db_assoc($result_topic))
-            {
-                $category_en_title_topic = $row_topic['category_en_title'];
-            }
-        }
 
         $product_music_file = '';
         if (isset($_FILES['product_music_file'])) {
@@ -198,15 +184,26 @@ switch ($typeManager) {
                 }
             }
 
+            $sql_product = "SELECT id FROM tbl_product_product   
+            WHERE id = (SELECT MAX(id) FROM tbl_product_product)
+           ";
+            $result = mysqli_query($conn, $sql_product);
+            $nums = mysqli_num_rows($result);
+            if ($nums > 0) {
+                while ($row = mysqli_fetch_assoc($result)) {
+                    $id_product_mp3 = $row['id'] + 1;
+                }
+            }
+
+
             $product_music_file = 'product_music_file';
-
-            $dir_save_product_music_foler = "music_file/" . $category_en_title_topic . "/" . $category_en_title ."/";
-
-            $dir_save_product_music_file2 = handing_file_img($product_music_file, $dir_save_product_music_foler);
+            $dir_save_product_music_foler = "music_file/product_category/";
+            $dir_save_product_music_file2 = handing_file_mp3($product_music_file, $dir_save_product_music_foler,$id_product_mp3);
 
             $sql = "UPDATE `tbl_product_product`
                 SET `product_music_file` = '{$dir_save_product_music_file2}' 
                 WHERE `id` = '{$id_product}'";
+            
             if ($conn->query($sql)) {
                 $check --;
             } else {

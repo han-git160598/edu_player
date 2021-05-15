@@ -15,6 +15,7 @@ function handing_file_mp3($myfile, $dir_save,$id_product)
 
         // kiem tra co phai file anh
         $check = getimagesize($_FILES[$myfile]['tmp_name']);
+        
         // print_r($img_file_type);
         // exit();
         if (1==1) {
