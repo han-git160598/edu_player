@@ -8,7 +8,7 @@ if (isset($_REQUEST['type_manager'])) {
 if (! isset($_REQUEST['type_manager'])) {
     returnError("type_manager is missing!");
 }   
-
+ 
 $typeManager = $_REQUEST['type_manager'];
 
 switch ($typeManager) {
@@ -30,7 +30,7 @@ switch ($typeManager) {
         } else {
             returnError("Nhập id_category ");
         }
-        $product_duration='';
+        $product_duration=''; 
         if (isset($_REQUEST['product_duration']) && ! empty($_REQUEST['product_duration'])) {
             $product_duration  = $_REQUEST['product_duration'];
         } else {
@@ -45,12 +45,15 @@ switch ($typeManager) {
             $sql_product = "SELECT id FROM tbl_product_product   
             WHERE id = (SELECT MAX(id) FROM tbl_product_product)
            ";
+        
             $result = mysqli_query($conn, $sql_product);
             $nums = mysqli_num_rows($result);
             if ($nums > 0) {
                 while ($row = mysqli_fetch_assoc($result)) {
                     $id_product = $row['id'] + 1;
                 }
+            }else{
+                $id_product= '1';
             }
 
 
@@ -58,18 +61,6 @@ switch ($typeManager) {
             $dir_save_product_music_foler = "music_file/product_category/";
             $dir_save_product_music_file2 = handing_file_mp3($product_music_file, $dir_save_product_music_foler,$id_product);
 
-           
-            
-
-            // $img_photo_category = saveImage($_FILES['product_music_file'], 'images/product_category/');
-            // if ($img_photo_category == "error_size_img") {
-            //     returnError("image_category > 5MB !");
-            // }
-            
-            // if ($img_photo_category == "error_type_img") {
-            //     returnError("image_category error type");
-            // }
-         
         } else {
             returnError("Nhập product_music_file ");
         }
@@ -103,21 +94,6 @@ switch ($typeManager) {
     
     case 'update_product':
 
-        
-        // $category_en_title='';
-        // if (isset($_REQUEST['category_en_title']) && ! empty($_REQUEST['category_en_title'])) {
-        //     $category_en_title  = $_REQUEST['category_en_title'];
-        // } else {
-        //     returnError("Nhập category_en_title");
-        // }
-
-        // $category_parent='';
-        // if (isset($_REQUEST['category_parent']) && ! empty($_REQUEST['category_parent'])) {
-        //     $category_parent  = $_REQUEST['category_parent'];
-        // } else {
-        //     returnError("Nhập category_parent");
-        // }
-        
         $id_product = '';
         if (isset($_REQUEST['id_product']) && ! empty($_REQUEST['id_product'])) {
             $id_product = $_REQUEST['id_product'];
@@ -184,18 +160,22 @@ switch ($typeManager) {
                 }
             }
 
-            $sql_product = "SELECT id FROM tbl_product_product   
-            WHERE id = (SELECT MAX(id) FROM tbl_product_product)
-           ";
-            $result = mysqli_query($conn, $sql_product);
+        $sql_link_product = "SELECT * FROM tbl_product_product
+                             WHERE id = '$id_product'
+        ";
+            $result = mysqli_query($conn, $sql_link_product);
             $nums = mysqli_num_rows($result);
             if ($nums > 0) {
                 while ($row = mysqli_fetch_assoc($result)) {
-                    $id_product_mp3 = $row['id'] + 1;
+                    $product_music_file = $row['product_music_file'];
+                 
                 }
             }
-
-
+// lay lai ten cu de luu file theo STT
+            $array = explode("/",$product_music_file);
+            $name_file_mp3 = explode("_",$array[2]);
+            $id_product_mp3 = $name_file_mp3[0];
+    
             $product_music_file = 'product_music_file';
             $dir_save_product_music_foler = "music_file/product_category/";
             $dir_save_product_music_file2 = handing_file_mp3($product_music_file, $dir_save_product_music_foler,$id_product_mp3);
@@ -221,43 +201,58 @@ switch ($typeManager) {
     
     case 'delete_product':
         
-        $id_product = '';
+        $arr_id_product = array();
         if (isset($_REQUEST['id_product']) && ! empty($_REQUEST['id_product'])) {
             $id_product = $_REQUEST['id_product'];
+
         } else {
             returnError("Nhập id_product!");
         }
-        
-        $sql_check_notification_exists = "SELECT * FROM tbl_product_product WHERE id = '" . $id_product . "'";
-        
-        $result_check = mysqli_query($conn, $sql_check_notification_exists);
-        $num_result_check = mysqli_num_rows($result_check);
-        
-        if ($num_result_check > 0) {
+        $check =0;
+        $arr_id_product = explode(",",$id_product);
+        foreach ($arr_id_product as $value)
+        { 
+          
+            $check ++;
+            $sql_check_notification_exists = "SELECT * FROM tbl_product_product WHERE id = '" . $value . "'";
+            $result_check = mysqli_query($conn, $sql_check_notification_exists);
+            $num_result_check = mysqli_num_rows($result_check);
             
-            while ($rowItem = $result_check->fetch_assoc()) {
-                $product_img = $rowItem['product_img'];
-                if (file_exists('../' . $product_img)) {
-                    @unlink('../' . $product_img);
+            if ($num_result_check > 0) {
+                
+                while ($rowItem = $result_check->fetch_assoc()) {
+                    $product_img = $rowItem['product_img'];
+                    if (file_exists('../' . $product_img)) {
+                        @unlink('../' . $product_img);
+                    }
+                    $product_music_file = $rowItem['product_music_file'];
+                    if (file_exists('../' . $product_music_file)) {
+                        @unlink('../' . $product_music_file);
+                    }
                 }
-                $product_music_file = $rowItem['product_music_file'];
-                if (file_exists('../' . $product_music_file)) {
-                    @unlink('../' . $product_music_file);
+                
+                $sql_delete_product = "
+                                DELETE FROM tbl_product_product
+                                WHERE  id = '" . $value . "'
+                              ";
+                if ($conn->query($sql_delete_product)) {
+                   $check --;
                 }
+            } 
+            else {
+                returnError("Không tìm thấy sản phẩm !");
             }
-            
-            $sql_delete_product = "
-                            DELETE FROM tbl_product_product
-                            WHERE  id = '" . $id_product . "'
-                          ";
-            if ($conn->query($sql_delete_product)) {
-                returnSuccess("Xóa sản phẩm thành công!");
-            } else {
-                returnError("Xóa sản phẩm không thành công!");
-            }
-        } else {
-            returnError("Không tìm thấy sản phẩm !");
         }
+      
+     
+        if($check == 0 )
+        {
+            returnSuccess("Xóa sản phẩm thành công!");
+        }else {
+            returnError("Xóa sản phẩm không thành công!");
+        }
+
+        
         
         break;
     

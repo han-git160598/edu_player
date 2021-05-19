@@ -7,7 +7,7 @@ if (isset($_REQUEST['id_category']) && $_REQUEST['id_category'] != '') {
 }
 
 $sql = "SELECT * FROM tbl_product_category 
-         WHERE category_parent != '0' 
+         WHERE category_parent = '0' 
          AND   category_hot = 'Y' 
         ";
 
@@ -45,7 +45,7 @@ if ($num > 0) {
             'category_img' => $row['category_img'],  
             'category_parent' => $row['category_parent'],
             'category_hot' => $row['category_hot'],
-            'category_son' => (isset($id_category) && !empty($id_category))?getCategorySon($row['id'], $conn):"" 
+          //  'category_son' => (isset($id_category) && !empty($id_category))?getCategorySon($row['id'], $conn):"" 
         );
         
         // Push to "data"

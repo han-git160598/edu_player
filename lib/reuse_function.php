@@ -10,7 +10,7 @@ function handing_file_mp3($myfile, $dir_save,$id_product)
         $target_save_file = $target_dir_4_upload . basename($_FILES[$myfile]['name']);
 
         $allow_file_type = array('mp3','mpeg');
-        $max_file_size = 5242880;
+        $max_file_size = 8242880;
         $img_file_type = pathinfo($target_file, PATHINFO_EXTENSION);
 
         // kiem tra co phai file anh
@@ -20,7 +20,7 @@ function handing_file_mp3($myfile, $dir_save,$id_product)
         // exit();
         if (1==1) {
             $img_info = pathinfo($_FILES[$myfile]['name']);
-            $img_info['filename'] = $id_product.'_Category_sub.mp3';
+            $img_info['filename'] = $id_product.'_Category_sub';
             $name_copy = $img_info['filename'];
             $target_file = $target_dir . $name_copy . "." . $img_info['extension'];
             $target_save_file = $target_dir_4_upload . $name_copy . "." . $img_info['extension'];

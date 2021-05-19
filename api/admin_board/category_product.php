@@ -1,4 +1,4 @@
-<?php
+<?php 
 if (isset($_REQUEST['type_manager'])) {
     if ($_REQUEST['type_manager'] == '') {
         unset($_REQUEST['type_manager']);
@@ -48,13 +48,13 @@ switch ($typeManager) {
         }
 
        
-    $sql_title_category = "SELECT * FROM tbl_product_category 
-    WHERE category_en_title = '" . $title_en . "'  ";
-      $result_title = mysqli_query($conn, $sql_title_category);
-      $nums_titel = mysqli_num_rows($result_title);
-      if ($nums_titel > 0) {
-        returnError("Tên danh mục tiếng anh đã tồn tại");
-      }
+        $sql_title_category = "SELECT * FROM tbl_product_category 
+        WHERE category_en_title = '" . $title_en . "'  ";
+        $result_title = mysqli_query($conn, $sql_title_category);
+        $nums_titel = mysqli_num_rows($result_title);
+        if ($nums_titel > 0) {
+            returnError("Tên danh mục tiếng anh đã tồn tại");
+        }
 
 
         $sql_create_category = "

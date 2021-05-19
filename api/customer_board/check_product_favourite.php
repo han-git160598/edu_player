@@ -27,14 +27,10 @@ $nums = db_nums($result);
 
 
 if ($nums > 0) {
-    $product_item = array(
-        'favourite_status' => "Y"
-    ) ;
+    $product_arr['success'] = 'true';
+    
 }else {
-    $product_item = array(
-        'favourite_status' => "N"
-    ) ;
+    $product_arr['success'] = 'false';
 }
-array_push($product_arr['data'],$product_item);
 
 reJson($product_arr);

@@ -145,30 +145,29 @@ switch ($typeManager) {
 
     case 'delete_favourite':
 
-        if (isset($_REQUEST['id_favourite']) && $_REQUEST['id_favourite'] != '') {
-            $id_favourite = $_REQUEST['id_favourite'];
+        if (isset($_REQUEST['id_customer']) && $_REQUEST['id_customer'] != '') {
+            $id_customer = $_REQUEST['id_customer'];
         }else {
-            returnError("Nhập id_favourite");;
+            returnError("Nhập id_customer");;
         }
-        
-        $sql_favourive = "SELECT * FROM tbl_product_favourite 
-                          WHERE id =  '" . $id_favourite . "'
-         ";
-        $result = db_qr($sql_favourive);
-        if(db_nums($result) >0 )
-        {
-            $sql_delete_favourite = "
-            DELETE FROM tbl_product_favourite
-            WHERE  id = '" . $id_favourite . "'
-            ";
-            if ($conn->query($sql_delete_favourite)) {
-                returnSuccess("Xóa bài hát yêu thích thành công!");
-            } else {
-                returnError("Xóa bài hát yêu thích không thành công!");
-            }
-        }else{
-            returnError("Không tồn tại id_favourite!");
+        if (isset($_REQUEST['id_product']) && $_REQUEST['id_product'] != '') {
+            $id_product = $_REQUEST['id_product'];
+        }else {
+            returnError("Nhập id_product");;
         }
+
+    
+        $sql_delete_favourite = "
+                DELETE FROM tbl_product_favourite
+                WHERE id_product =  '" . $id_product . "'
+                AND id_customer =  '" . $id_customer . "'
+        ";
+        if ($conn->query($sql_delete_favourite)) {
+            returnSuccess("Xóa bài hát yêu thích thành công!");
+        } else {
+            returnError("Xóa bài hát yêu thích không thành công!");
+        }
+    
            
     
 

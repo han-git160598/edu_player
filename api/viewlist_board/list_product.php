@@ -10,20 +10,29 @@ $sql = "SELECT
             `tbl_product_category`.`id` as `id_category`,
             `tbl_product_category`.`category_vn_title` as `category_vn_title`,
             `tbl_product_category`.`category_en_title` as `category_en_title`,
-            `tbl_product_category`.`category_parent` as `category_parent`,
+            `tbl_product_category`.`category_parent` as `category_parent`";
 
-            `tbl_product_favourite`.`id` as `id_favourite`,
-            `tbl_product_favourite`.`id_customer` as `id_customer`
 
-            FROM `tbl_product_product`
-            LEFT JOIN `tbl_product_favourite` ON `tbl_product_favourite`.`id_product` = `tbl_product_product`.`id`
-            LEFT JOIN `tbl_product_category` ON `tbl_product_category`.`id` = `tbl_product_product`.`id_category`
+if(isset($_REQUEST['id_customer']) && !(empty($_REQUEST['id_customer']))){
+    $id_customer = $_REQUEST['id_customer'];
+    $sql .="
+            ,`tbl_product_favourite`.`id` as `id_favourite`
+            ,`tbl_product_favourite`.`id_customer` as `id_customer`";
+}       
+            
+
+$sql .=     " FROM `tbl_product_product` ";
+            
+if(isset($id_customer) && !(empty($id_customer))){
+    $sql .=" LEFT JOIN `tbl_product_favourite` ON `tbl_product_favourite`.`id_product` = `tbl_product_product`.`id` ";
+}
+
+$sql .= " LEFT JOIN `tbl_product_category` ON `tbl_product_category`.`id` = `tbl_product_product`.`id_category`
             WHERE 1=1
             ";
             
 
-if(isset($_REQUEST['id_customer']) && !(empty($_REQUEST['id_customer']))){
-    $id_customer = $_REQUEST['id_customer'];
+if(isset($id_customer) && !(empty($id_customer))){
     $sql .="AND (`tbl_product_favourite`.`id_customer` = '{$id_customer}') ";
 }
 
@@ -47,6 +56,8 @@ if (isset($_REQUEST['filter'])) {
     }
 }
 
+
+
 $product_arr = array();
 
 $sql .= " ORDER BY `tbl_product_product`.`id` DESC";
@@ -63,6 +74,7 @@ if ($nums > 0) {
     while ($row = db_assoc($result)) {
         $product_item = array(
             'id_product' => $row['id_product'],
+            'id_favourite' => (!empty($row['id_favourite']))?$row['id_favourite']:"",
             'product_name' => htmlspecialchars_decode($row['product_name']),
             'product_img' => htmlspecialchars_decode($row['product_img']),
             'product_duration' => htmlspecialchars_decode($row['product_duration']),
