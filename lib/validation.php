@@ -23,7 +23,7 @@ function is_cert($cert_no)
 function is_password($password)
 {
     // $parttern = "/^([A-Z]){1}([\w_\.!@#$%^&*()]+){5,31}$/";
-    $parttern = "/^([\w_\.!@#$%^&*()]+){6,31}$/";
+    $parttern = "/^([\w_\.!@#$%^&*()]+){8,31}$/";
     if (preg_match($parttern, $password))
         return true;
 }

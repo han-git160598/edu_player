@@ -64,7 +64,7 @@ if (isset($_REQUEST['old_pass']) && !empty($_REQUEST['old_pass'])) {
 
 if (isset($_REQUEST['new_pass'])) {
     if (!is_password($_REQUEST['new_pass'])) {
-        returnError("Mật khẩu không đúng định dạng");
+        returnError("Mật khẩu tối thiểu phải 8 ký tự");
     } elseif ($_REQUEST['new_pass'] == $_REQUEST['old_pass']) {
         returnError("Mật khẩu mới phải khác mật khẩu cũ");
     } else {

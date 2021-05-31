@@ -11,11 +11,7 @@ if (isset($_REQUEST['username']) && !(empty($_REQUEST['username']))) {
 }
 
 if (isset($_REQUEST['password']) && !(empty($_REQUEST['password']))) {
-    if (is_password($_REQUEST['password'])) {
-        $password = md5($_REQUEST['password']);
-    } else {
-        returnError("password không đúng định dạng");
-    }
+    $password = md5($_REQUEST['password']);
 } else {
     returnError("Nhập password");
 }

@@ -30,18 +30,13 @@ switch ($typeManager) {
             returnError("Nhập tên danh mục (tiếng anh)!");
         }
 
-        $category_parent='0';
-        if (isset($_REQUEST['category_parent']) &&  $_REQUEST['category_parent'] !='') {
-            $category_parent = $_REQUEST['category_parent'];
-        } 
-        
         $img_photo_category= '';
         if (isset($_FILES['image_category']) && ! empty($_REQUEST['category_en_title'])) {
 
             $image_category = 'image_category';
             $dir_save_image_category = "images/product_category/";
             $link_img_category = handing_file_img($image_category, $dir_save_image_category);
-
+  
 
         }else{
             returnError("Nhập image_category");
@@ -61,7 +56,6 @@ switch ($typeManager) {
             INSERT INTO tbl_product_category SET
             category_vn_title            = '" . $title_vn . "',
             category_en_title            = '" . $title_en . "',
-            category_parent            = '" . $category_parent . "',
             category_img     = '" . $link_img_category . "'
         ";
 
@@ -89,18 +83,18 @@ switch ($typeManager) {
         
         $check = 0;
         
-        if (isset($_REQUEST['category_hot']) && ! empty($_REQUEST['category_hot'])) {
-            $check ++;
-            $query = "UPDATE tbl_product_category SET ";
-            $query .= " category_hot  = '" . $_REQUEST['category_hot'] . "' ";
-            $query .= " WHERE id = '" . $id_category . "'";
-            // Create post
-            if ($conn->query($query)) {
-                $check --;
-            } else {
-                returnError("Cập nhật danh mục nổi bật");
-            }
-        }
+        // if (isset($_REQUEST['category_hot']) && ! empty($_REQUEST['category_hot'])) {
+        //     $check ++;
+        //     $query = "UPDATE tbl_product_category SET ";
+        //     $query .= " category_hot  = '" . $_REQUEST['category_hot'] . "' ";
+        //     $query .= " WHERE id = '" . $id_category . "'";
+        //     // Create post
+        //     if ($conn->query($query)) {
+        //         $check --;
+        //     } else {
+        //         returnError("Cập nhật danh mục nổi bật");
+        //     }
+        // }
 
         if (isset($_REQUEST['category_vn_title']) && ! empty($_REQUEST['category_vn_title'])) {
             $check ++;
@@ -200,16 +194,6 @@ switch ($typeManager) {
             returnError("Vui lòng xóa sản phẩm hết mới xóa danh mục!");
         }
 
-        $sql_check_category = "SELECT id FROM tbl_product_category 
-                                WHERE category_parent = '" . $id_category . "'";
-        $result_category = db_qr($sql_check_category);
-        if(db_nums($result_category)>0)
-        {
-            returnError("Vui lòng xóa hết danh mục con rồi xóa danh mục cha!");
-        }
-
-         
-
         $sql_check_category_exists = "SELECT * FROM tbl_product_category WHERE id = '" . $id_category . "'";
 
         $result_check = mysqli_query($conn, $sql_check_category_exists);
@@ -219,7 +203,6 @@ switch ($typeManager) {
             
             while ($rowItem = $result_check->fetch_assoc()) {
                 $image_category = $rowItem['category_img'];
-                $category_parent = $rowItem['category_parent'];
                 $category_en_title = $rowItem['category_en_title'];
                 
                 

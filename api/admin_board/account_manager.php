@@ -179,7 +179,7 @@ switch ($typeManager) {
             if (is_password($_REQUEST['password'])) {
                 $password = md5($_REQUEST['password']);
             } else {
-                returnError("Mật khẩu không đúng định dạng");
+                returnError("Mật khẩu không đúng định dạng, tối thiểu 8 ký tự");
             }
         } else {
             returnError("Điền mật khẩu");

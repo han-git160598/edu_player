@@ -23,17 +23,19 @@ switch ($type_manager) {
                 returnError("Nhập id_user");
             }
 
-            if (isset($_REQUEST['password_reset'])) {
-                if ($_REQUEST['password_reset'] == '') {
-                    unset($_REQUEST['password_reset']);
-                    returnError("Nhập password_reset");
+            if (isset($_REQUEST['password_reset']) && !empty($_REQUEST['password_reset'])) {
+                if(is_password($_REQUEST['password_reset']))
+                {
+                    $password_reset = $_REQUEST['password_reset'];
+                }else{
+                    returnError("Mật khẩu tối thiểu 8 ký tự");
                 }
             } else {
                 returnError("Nhập password_reset");
             }
 
             $id_account = $_REQUEST['id_user'];
-            $password_reset = $_REQUEST['password_reset'];
+            
 
             $sql_check_account_exists = "SELECT * FROM tbl_customer_customer WHERE id = '" . $id_account . "'";
 
@@ -72,8 +74,7 @@ switch ($type_manager) {
             $success = array(); 
             
 
-            $sql_favourite = "DELETE FROM `tbl_product_favourite` WHERE `id_customer` = '{$id_customer}'";
-            db_qr($sql_favourite);
+ 
             
             $sql = "DELETE FROM `tbl_customer_customer` WHERE `id` = '{$id_customer}'";
             if (db_qr($sql)) {
@@ -195,15 +196,14 @@ switch ($type_manager) {
                 returnError("Nhập số điện thoại");
             }
 
-            if (isset($_REQUEST['customer_password'])) {  //*
-                if ($_REQUEST['customer_password'] == '') {
-                    unset($_REQUEST['customer_password']);
-                    returnError("Nhập số mật khẩu");
-                } else {
+            if(isset($_REQUEST['customer_password']) && !(empty($_REQUEST['customer_password']))){
+                if(is_password($_REQUEST['customer_password'])){
                     $customer_password = md5($_REQUEST['customer_password']);
+                }else{
+                    returnError("Mật khẩu tối thiểu phải 8 ký tự");
                 }
-            } else {
-                returnError("Nhập số mật khẩu");
+            }else{
+                returnError("Nhập customer_password");
             }
    
             

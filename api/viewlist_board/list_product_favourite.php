@@ -29,10 +29,10 @@ $product_arr = array();
 // $total = count(db_fetch_array($sql));
 // $limit = 100;
 // $page = 1;
-
 // if (isset($_REQUEST['limit']) && !empty($_REQUEST['limit'])) { 
 //     $limit = $_REQUEST['limit'];
 // }
+
 // if (isset($_REQUEST['page']) && !empty($_REQUEST['page'])) {
 //     $page = $_REQUEST['page'];
 // }

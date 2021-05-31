@@ -104,20 +104,17 @@ switch ($detect) {
         }
      
         /*viewlist board*/
+
+    case 'list_page':{
+        include_once 'viewlist_board/list_page.php';
+            break;
+    }
     case 'list_category_hot':{
         include_once 'viewlist_board/list_category_hot.php';
             break;
     }
     case 'list_favourite':{
             include_once 'viewlist_board/list_favourite.php';
-            break;
-    }
-    case 'list_category_by_topic':{
-        include_once 'viewlist_board/list_category_by_topic.php';
-            break;
-    }
-    case 'list_topic':{
-        include_once 'viewlist_board/list_topic.php';
             break;
     }
     case 'list_product':{

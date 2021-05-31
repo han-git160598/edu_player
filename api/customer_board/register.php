@@ -16,7 +16,7 @@ if (isset($_REQUEST['customer_password']) && !(empty($_REQUEST['customer_passwor
     if (is_password($_REQUEST['customer_password'])) {
         $customer_password = md5($_REQUEST['customer_password']);
     } else {
-        returnError("Mật khẩu không đúng định dạng");
+        returnError("Mật khẩu tối thiểu phải 8 ký tự");
     }
 } else {
     returnError("Vui lòng nhập mật khẩu");

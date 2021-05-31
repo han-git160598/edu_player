@@ -10,7 +10,7 @@ if(isset($_REQUEST['new_pass']) && !(empty($_REQUEST['new_pass']))){
     if(is_password($_REQUEST['new_pass'])){
         $new_pass = md5($_REQUEST['new_pass']);
     }else{
-        returnError("new_pass không đúng định dạng");
+        returnError("Mật khẩu tối thiểu phải 8 ký tự");
     }
 }else{
     returnError("Nhập new_pass");
