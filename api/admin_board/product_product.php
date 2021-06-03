@@ -201,6 +201,32 @@ switch ($typeManager) {
             }
         }
 
+        if (isset($_REQUEST['product_ex_en']) && ! empty($_REQUEST['product_ex_en'])) {
+            $check ++;
+            $query = "UPDATE tbl_product_product SET ";
+            $query .= " product_ex_en  = '" . $_REQUEST['product_ex_en'] . "' ";
+            $query .= " WHERE id = '" . $id_product . "'";
+            // Create post
+            if ($conn->query($query)) {
+                $check --;
+            } else {
+                returnError("Cập nhật sản phẩm không thành công!");
+            }
+        }
+
+        if (isset($_REQUEST['product_ex_vn']) && ! empty($_REQUEST['product_ex_vn'])) {
+            $check ++;
+            $query = "UPDATE tbl_product_product SET ";
+            $query .= " product_ex_vn  = '" . $_REQUEST['product_ex_vn'] . "' ";
+            $query .= " WHERE id = '" . $id_product . "'";
+            // Create post
+            if ($conn->query($query)) {
+                $check --;
+            } else {
+                returnError("Cập nhật sản phẩm không thành công!");
+            }
+        }
+
         if (isset($_REQUEST['product_spelling']) && ! empty($_REQUEST['product_spelling'])) {
             $check ++;
             $query = "UPDATE tbl_product_product SET ";
